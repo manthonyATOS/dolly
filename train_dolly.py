@@ -34,14 +34,14 @@
 
 # COMMAND ----------
 
-!wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/libcusparse-dev-11-3_11.5.0.58-1_amd64.deb -O /tmp/libcusparse-dev-11-3_11.5.0.58-1_amd64.deb && \
-  wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/libcublas-dev-11-3_11.5.1.109-1_amd64.deb -O /tmp/libcublas-dev-11-3_11.5.1.109-1_amd64.deb && \
-  wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/libcusolver-dev-11-3_11.1.2.109-1_amd64.deb -O /tmp/libcusolver-dev-11-3_11.1.2.109-1_amd64.deb && \
-  wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/libcurand-dev-11-3_10.2.4.109-1_amd64.deb -O /tmp/libcurand-dev-11-3_10.2.4.109-1_amd64.deb && \
-  dpkg -i /tmp/libcusparse-dev-11-3_11.5.0.58-1_amd64.deb && \
-  dpkg -i /tmp/libcublas-dev-11-3_11.5.1.109-1_amd64.deb && \
-  dpkg -i /tmp/libcusolver-dev-11-3_11.1.2.109-1_amd64.deb && \
-  dpkg -i /tmp/libcurand-dev-11-3_10.2.4.109-1_amd64.deb
+#!wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/libcusparse-dev-11-3_11.5.0.58-1_amd64.deb -O /tmp/libcusparse-dev-11-3_11.5.0.58-1_amd64.deb && \
+#  wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/libcublas-dev-11-3_11.5.1.109-1_amd64.deb -O /tmp/libcublas-dev-11-3_11.5.1.109-1_amd64.deb && \
+#  wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/libcusolver-dev-11-3_11.1.2.109-1_amd64.deb -O /tmp/libcusolver-dev-11-3_11.1.2.109-1_amd64.deb && \
+#  wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/libcurand-dev-11-3_10.2.4.109-1_amd64.deb -O /tmp/libcurand-dev-11-3_10.2.4.109-1_amd64.deb && \
+#  dpkg -i /tmp/libcusparse-dev-11-3_11.5.0.58-1_amd64.deb && \
+#  dpkg -i /tmp/libcublas-dev-11-3_11.5.1.109-1_amd64.deb && \
+#  dpkg -i /tmp/libcusolver-dev-11-3_11.1.2.109-1_amd64.deb && \
+#  dpkg -i /tmp/libcurand-dev-11-3_10.2.4.109-1_amd64.deb
 
 # COMMAND ----------
 
@@ -71,7 +71,7 @@
 # COMMAND ----------
 
 import logging
-
+import dbutils
 logging.basicConfig(
     format="%(asctime)s %(levelname)s [%(name)s] %(message)s", level=logging.INFO, datefmt="%Y-%m-%d %H:%M:%S"
 )
@@ -86,11 +86,11 @@ from datetime import datetime
 from training.consts import DEFAULT_INPUT_MODEL, SUGGESTED_INPUT_MODELS
 from training.trainer import load_training_dataset, load_tokenizer
 
-dbutils.widgets.combobox("input_model", DEFAULT_INPUT_MODEL, SUGGESTED_INPUT_MODELS, "input_model")
-dbutils.widgets.text("num_gpus", "", "num_gpus")
-dbutils.widgets.text("local_training_root", "", "local_training_root")
-dbutils.widgets.text("dbfs_output_root", "", "dbfs_output_root")
-dbutils.widgets.text("experiment_id", "", "experiment_id")
+#dbutils.widgets.combobox("input_model", DEFAULT_INPUT_MODEL, SUGGESTED_INPUT_MODELS, "input_model")
+#dbutils.widgets.text("num_gpus", "", "num_gpus")
+#dbutils.widgets.text("local_training_root", "", "local_training_root")
+#dbutils.widgets.text("dbfs_output_root", "", "dbfs_output_root")
+#dbutils.widgets.text("experiment_id", "", "experiment_id")
 
 # COMMAND ----------
 
@@ -103,8 +103,11 @@ load_tokenizer()
 timestamp = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
 model_name = "dolly"
 
-experiment_id = dbutils.widgets.get("experiment_id")
-input_model = dbutils.widgets.get("input_model")
+
+#experiment_id = dbutils.widgets.get("experiment_id")
+#input_model = dbutils.widgets.get("input_model")
+experiment_id="repo42"
+input_model="EleutherAI/pythia-6.9b"
 
 if experiment_id:
     experiment_id = re.sub(r"\s+", "_", experiment_id.strip())
@@ -115,10 +118,10 @@ checkpoint_dir_name = f"{model_name}__{timestamp}"
 root_path = os.getcwd()
 deepspeed_config = os.path.join(root_path, "config/ds_z3_bf16_config.json")
 
-dolly_training_dir_name = "dolly_training"
-
+dolly_training_dir_name = "dolltrain"
+local_training_root=None
 # Use the local training root path if it was provided.  Otherwise try to find a sensible default.
-local_training_root = dbutils.widgets.get("local_training_root")
+#local_training_root = dbutils.widgets.get("local_training_root")
 if not local_training_root:
     # Use preferred path when working in a Databricks cluster if it exists.
     if os.path.exists("/local_disk0"):
@@ -127,7 +130,7 @@ if not local_training_root:
     else:
         local_training_root = os.path.join(os.path.expanduser('~'), dolly_training_dir_name)
 
-dbfs_output_root = dbutils.widgets.get("dbfs_output_root")
+dbfs_output_root =None #dbutils.widgets.get("dbfs_output_root")
 if not dbfs_output_root:
     dbfs_output_root = f"/dbfs/{dolly_training_dir_name}"
 
@@ -138,7 +141,7 @@ local_output_dir = os.path.join(local_training_root, checkpoint_dir_name)
 dbfs_output_dir = os.path.join(dbfs_output_root, checkpoint_dir_name)
 
 num_gpus_flag = ""
-num_gpus = dbutils.widgets.get("num_gpus")
+num_gpus = 0
 if num_gpus:
     num_gpus = int(num_gpus)
     num_gpus_flag = f"--num_gpus={num_gpus}"
@@ -154,32 +157,35 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 # COMMAND ----------
 
 # MAGIC %load_ext tensorboard
-# MAGIC %tensorboard --logdir '{tensorboard_display_dir}'
+os.system("tensorboard --logdir '{tensorboard_display_dir}'")
 
 # COMMAND ----------
-
-# MAGIC !deepspeed {num_gpus_flag} \
-# MAGIC     --module training.trainer \
-# MAGIC     --input-model {input_model} \
-# MAGIC     --deepspeed {deepspeed_config} \
-# MAGIC     --epochs 2 \
-# MAGIC     --local-output-dir {local_output_dir} \
-# MAGIC     --dbfs-output-dir {dbfs_output_dir} \
-# MAGIC     --per-device-train-batch-size 6 \
-# MAGIC     --per-device-eval-batch-size 6 \
-# MAGIC     --logging-steps 10 \
-# MAGIC     --save-steps 200 \
-# MAGIC     --save-total-limit 20 \
-# MAGIC     --eval-steps 50 \
-# MAGIC     --warmup-steps 50 \
-# MAGIC     --test-size 200 \
-# MAGIC     --lr 5e-6
-
+# THIS IS THE BIT I NEED TO MODIFY
+os.system(
+"deepspeed {num_gpus_flag} \
+     --module training.trainer \
+     --input-model {input_model} \
+     --deepspeed {deepspeed_config} \
+     --epochs 2 \
+     --local-output-dir {local_output_dir} \
+     --dbfs-output-dir {dbfs_output_dir} \
+     --per-device-train-batch-size 6 \
+     --per-device-eval-batch-size 6 \
+     --logging-steps 10 \
+     --save-steps 200 \
+     --save-total-limit 20 \
+     --eval-steps 50 \
+     --warmup-steps 50 \
+     --test-size 200 \
+     --lr 5e-6"
+)
 # COMMAND ----------
 
 from training.generate import generate_response, load_model_tokenizer_for_generate
+print("LOCAL_OUTPUT_DIR: {}".format(local_output_dir))
 
-model, tokenizer = load_model_tokenizer_for_generate(local_output_dir)
+
+model, tokenizer = load_model_tokenizer_for_generate("databricks/dolly-v2-12b")
 
 # COMMAND ----------
 
