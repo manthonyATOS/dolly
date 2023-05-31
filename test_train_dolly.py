@@ -71,7 +71,7 @@
 # COMMAND ----------
 
 import logging
-import dbutils
+#import dbutils
 logging.basicConfig(
     format="%(asctime)s %(levelname)s [%(name)s] %(message)s", level=logging.INFO, datefmt="%Y-%m-%d %H:%M:%S"
 )
@@ -132,7 +132,7 @@ if not local_training_root:
 
 dbfs_output_root =None #dbutils.widgets.get("dbfs_output_root")
 if not dbfs_output_root:
-    dbfs_output_root = f"/dbfs/{dolly_training_dir_name}"
+    dbfs_output_root = f"./{dolly_training_dir_name}"
 
 os.makedirs(local_training_root, exist_ok=True)
 os.makedirs(dbfs_output_root, exist_ok=True)

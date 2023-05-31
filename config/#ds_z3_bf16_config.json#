@@ -38,8 +38,8 @@
     "train_micro_batch_size_per_gpu": "auto",
     "wall_clock_breakdown": true,
     "comms_logger": {
-	"enabled": true,
-	"verbose": true,
+       "enabled": true,
+       "verbose": false,
 	"prof_all": true,
 	"debug": false
     }

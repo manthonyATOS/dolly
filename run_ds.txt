@@ -1,0 +1,61 @@
+nohup: ignoring input
+[2023-05-30 09:21:10,575] [WARNING] [runner.py:191:fetch_hostfile] Unable to find hostfile, will proceed with training with local resources only.
+[2023-05-30 09:21:11,081] [INFO] [runner.py:541:main] cmd = /opt/conda/bin/python3.7 -u -m deepspeed.launcher.launch --world_info=eyJsb2NhbGhvc3QiOiBbMF19 --master_addr=127.0.0.1 --master_port=29500 --module --enable_each_rank_log=None training.trainer --input-model databricks/dolly-v2-3b --deepspeed /home/matthew_anthony/dolly/config/ds_z3_bf16_config.json --epochs 2 --local-output-dir /home/matthew_anthony/dolltrain/dolly__repo42__2023-05-26T14:39:57 --dbfs-output-dir ./dolltrain/dolly__repo42__2023
+[2023-05-30 09:21:14,229] [INFO] [launch.py:229:main] WORLD INFO DICT: {'localhost': [0]}
+[2023-05-30 09:21:14,229] [INFO] [launch.py:235:main] nnodes=1, num_local_procs=1, node_rank=0
+[2023-05-30 09:21:14,229] [INFO] [launch.py:246:main] global_rank_mapping=defaultdict(<class 'list'>, {'localhost': [0]})
+[2023-05-30 09:21:14,229] [INFO] [launch.py:247:main] dist_world_size=1
+[2023-05-30 09:21:14,229] [INFO] [launch.py:249:main] Setting CUDA_VISIBLE_DEVICES=0
+2023-05-30 09:21:22 INFO [__main__] Loading tokenizer for databricks/dolly-v2-3b
+2023-05-30 09:21:22 INFO [__main__] Loading model for databricks/dolly-v2-3b
+2023-05-30 09:26:19 ERROR [__main__] main failed
+Traceback (most recent call last):
+  File "/opt/conda/lib/python3.7/site-packages/transformers/modeling_utils.py", line 446, in load_state_dict
+    return torch.load(checkpoint_file, map_location="cpu")
+  File "/opt/conda/lib/python3.7/site-packages/torch/serialization.py", line 789, in load
+    return _load(opened_zipfile, map_location, pickle_module, **pickle_load_args)
+  File "/opt/conda/lib/python3.7/site-packages/torch/serialization.py", line 1131, in _load
+    result = unpickler.load()
+  File "/opt/conda/lib/python3.7/site-packages/torch/serialization.py", line 1101, in persistent_load
+    load_tensor(dtype, nbytes, key, _maybe_decode_ascii(location))
+  File "/opt/conda/lib/python3.7/site-packages/torch/serialization.py", line 1079, in load_tensor
+    storage = zip_file.get_storage_from_record(name, numel, torch.UntypedStorage).storage().untyped()
+RuntimeError: [enforce fail at alloc_cpu.cpp:75] err == 0. DefaultCPUAllocator: can't allocate memory: you tried to allocate 52428800 bytes. Error code 12 (Cannot allocate memory)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/conda/lib/python3.7/site-packages/transformers/modeling_utils.py", line 450, in load_state_dict
+    if f.read(7) == "version":
+  File "/opt/conda/lib/python3.7/codecs.py", line 322, in decode
+    (result, consumed) = self._buffer_decode(data, self.errors, final)
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0x80 in position 64: invalid start byte
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/matthew_anthony/dolly/training/trainer.py", line 326, in <module>
+    main()
+  File "/opt/conda/lib/python3.7/site-packages/click/core.py", line 1130, in __call__
+    return self.main(*args, **kwargs)
+  File "/opt/conda/lib/python3.7/site-packages/click/core.py", line 1055, in main
+    rv = self.invoke(ctx)
+  File "/opt/conda/lib/python3.7/site-packages/click/core.py", line 1404, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+  File "/opt/conda/lib/python3.7/site-packages/click/core.py", line 760, in invoke
+    return __callback(*args, **kwargs)
+  File "/home/matthew_anthony/dolly/training/trainer.py", line 318, in main
+    train(**kwargs)
+  File "/home/matthew_anthony/dolly/training/trainer.py", line 205, in train
+    pretrained_model_name_or_path=input_model, gradient_checkpointing=gradient_checkpointing
+  File "/home/matthew_anthony/dolly/training/trainer.py", line 141, in get_model_tokenizer
+    model = load_model(pretrained_model_name_or_path, gradient_checkpointing=gradient_checkpointing)
+  File "/home/matthew_anthony/dolly/training/trainer.py", line 132, in load_model
+    pretrained_model_name_or_path, trust_remote_code=True, use_cache=False if gradient_checkpointing else True
+  File "/opt/conda/lib/python3.7/site-packages/transformers/models/auto/auto_factory.py", line 468, in from_pretrained
+    pretrained_model_name_or_path, *model_args, config=config, **hub_kwargs, **kwargs
+  File "/opt/conda/lib/python3.7/site-packages/transformers/modeling_utils.py", line 2542, in from_pretrained
+    state_dict = load_state_dict(resolved_archive_file)
+  File "/opt/conda/lib/python3.7/site-packages/transformers/modeling_utils.py", line 463, in load_state_dict
+    f"Unable to load weights from pytorch checkpoint file for '{checkpoint_file}' "
+OSError: Unable to load weights from pytorch checkpoint file for '/home/matthew_anthony/.cache/huggingface/hub/models--databricks--dolly-v2-3b/snapshots/e19a5252f69d79d94ac95045eb9b8a158775f701/pytorch_model.bin' at '/home/matthew_anthony/.cache/huggingface/hub/models--databricks--dolly-v2-3b/snapshots/e19a5252f69d79d94ac95045eb9b8a158775f701/pytorch_model.bin'. If you tried to load a PyTorch model from a TF 2.0 checkpoint, please set from_tf=True.
